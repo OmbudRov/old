@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>👴🏻</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            font-family: system-ui, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .countdownContainer {
+            text-align: center;
+        }
+
+        .timer {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .timeBlock {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .number {
+            font-size: 5rem;
+            font-weight: 300;
+            letter-spacing: 2px;
+            font-variant-numeric: tabular-nums;
+            color: #ff0000;
+            text-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
+            line-height: 1;
+        }
+
+        .unitLabel {
+            font-size: 0.75rem;
+            color: #555555;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 8px;
+        }
+
+        .separator {
+            font-size: 4rem;
+            color: #ff0000;
+            font-weight: 300;
+            line-height: 1;
+            padding-bottom: 25px;
+            opacity: 0.7;
+        }
+
+        .label {
+            font-size: 1rem;
+            color: #888888;
+            margin-top: 30px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .label .highlight {
+            color: #ff0000;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="countdownContainer">
+    <div class="label" id="event-label">Nathan turns <span class="highlight" id="event-name">Event</span> in </div>
+        <div class="timer" id="countdown">
+            <!-- Years -->
+            <div class="timeBlock" id="years-block">
+                <span class="number" id="years">00</span>
+                <span class="unitLabel">Years</span>
+            </div>
+            <span class="separator" id="s1">:</span>
+
+            <!-- Days -->
+            <div class="timeBlock" id="days-block">
+                <span class="number" id="days">00</span>
+                <span class="unitLabel">Days</span>
+            </div>
+            <span class="separator" id="s2">:</span>
+
+            <!-- Hours -->
+            <div class="timeBlock" id="hours-block">
+                <span class="number" id="hours">00</span>
+                <span class="unitLabel">Hours</span>
+            </div>
+            <span class="separator" id="s3">:</span>
+
+            <!-- Minutes -->
+            <div class="timeBlock" id="minutes-block">
+                <span class="number" id="minutes">00</span>
+                <span class="unitLabel">Minutes</span>
+            </div>
+            <span class="separator" id="s4">:</span>
+
+            <!-- Seconds -->
+            <div class="timeBlock" id="seconds-block">
+                <span class="number" id="seconds">00</span>
+                <span class="unitLabel">Seconds</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const birthdays = [
+            { name: "30", date: "2026-11-13T00:00:00" },
+            { name: "40", date: "2036-11-13T00:00:00" }
+        ];
+
+        let currentMilestoneIndex = 0;
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            while (currentMilestoneIndex < birthdays.length) {
+                const targetTime = new Date(birthdays[currentMilestoneIndex].date).getTime();
+                if (targetTime > now) {
+                    break;
+                }
+                currentMilestoneIndex++;
+            }
+
+            const nextBirthday = birthdays[currentMilestoneIndex];
+            const targetDate = new Date(nextBirthday.date).getTime();
+            const difference = targetDate - now;
+
+            document.getElementById('event-name').textContent = nextBirthday.name;
+
+            // Time constants
+            const secondMs = 1000;
+            const minuteMs = secondMs * 60;
+            const hourMs = minuteMs * 60;
+            const dayMs = hourMs * 24;
+            const yearMs = dayMs * 365.25;
+
+            // Breakdown calculations
+            const years = Math.floor(difference / yearMs);
+            const days = Math.floor((difference % yearMs) / dayMs);
+            const hours = Math.floor((difference % dayMs) / hourMs);
+            const minutes = Math.floor((difference % hourMs) / minuteMs);
+            const seconds = Math.floor((difference % minuteMs) / secondMs);
+
+            const blocks = ['years-block', 'days-block', 'hours-block', 'minutes-block', 'seconds-block'];
+            blocks.forEach(b => document.getElementById(b).style.display = 'flex');
+            for(let i=1; i<=4; i++) {
+              document.getElementById(`s${i}`).style.display = 'inline';
+            }
+
+            // Make Numbers fancy
+            document.getElementById('years').textContent = String(years).padStart(2, '0');
+            document.getElementById('days').textContent = String(days).padStart(2, '0');
+            document.getElementById('hours').textContent = String(hours).padStart(2, '0');
+            document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
+            document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
+
+            // Hide Useless Numbers
+            if (years === 0) {
+                document.getElementById('years-block').style.display = 'none';
+                document.getElementById('s1').style.display = 'none';
+            }
+            if (years === 0 && days === 0) {
+                document.getElementById('days-block').style.display = 'none';
+                document.getElementById('s2').style.display = 'none';
+            }
+            if (years === 0 && days === 0 && hours === 0) {
+                document.getElementById('hours-block').style.display = 'none';
+                document.getElementById('s3').style.display = 'none';
+            }
+            if (years === 0 && days === 0 && hours === 0 && minutes === 0) {
+                document.getElementById('minutes-block').style.display = 'none';
+                document.getElementById('s4').style.display = 'none';
+            }
+        }
+
+        updateCountdown();
+        const countdownInterval = setInterval(updateCountdown, 1000);
+    </script>
+
+</body>
+</html>
